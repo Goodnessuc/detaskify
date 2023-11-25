@@ -1,1 +1,2 @@
-package cmd
+package main
+
