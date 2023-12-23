@@ -5,7 +5,7 @@ import (
 	"os/exec"
 )
 
-// NotifyLinuxUsers TODO: Make sure you provide installation for lib-notify-gen sudo apt-get install libnotify-bin
+// TODO: Make sure you provide installation for lib-notify-gen sudo apt-get install libnotify-bin
 
 func NotifyLinuxUsers(notification string) {
 	// Command to send a notification
