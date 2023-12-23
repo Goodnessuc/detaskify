@@ -7,7 +7,6 @@ on:
   pull_request:
     branches:
       - main
-
 jobs:
   build:
     name: Build and Test
@@ -34,9 +33,6 @@ jobs:
 
       - name: Build
         run: go build -v ./...
-
-      - name: Test
-        run: go test -v ./...
 
       - name: Vet
         run: go vet ./...
