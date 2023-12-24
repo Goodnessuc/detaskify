@@ -5,48 +5,46 @@ project_status:
   - "research"
 
 project_tasks:
-  - id: "t001"
-    title: "Setup Project Environment"
-    description: "Install necessary dependencies and configure the development environment."
-    priority: "high"
-    type: "todo"
-    deadline: "2023-01-10"
-    status: "pending"
-    assignees:
-      - "developera"
-      - "developerb"
-    tags:
-      - "setup"
-      - "environment"
-    reminders:
-      - message: "Check the code review comments"
-        time: "09:00"
-        repeat:
-          - "monday"
-          - "thursday"
+  title: "Setup Project Environment"
+  description: "Install necessary dependencies and configure the development environment."
+  priority: "high"
+  type: "todo"
+  deadline: "2023-01-10"
+  status: "pending"
+  assignees:
+    - "developera"
+    - "developerb"
+  tags:
+    - "setup"
+    - "environment"
+  reminder:
+    - message: "Check the code review comments"
+      time: "09:00"
+      repeat:
+        - "monday"
+        - "thursday"
 
 reminders:
-  types:
-    desktop_notification:
+  desktop_notification:
+    enabled: true
+    display_time: 5  # in seconds
+  email_notification:
+    enabled: true
+    email_address: "user@example.com"
+  messaging_app_notifications:
+    - name: "slack"
       enabled: true
-      display_time: 5  # in seconds
-    email_notification:
-      enabled: true
-      email_address: "user@example.com"
-    messaging_app_notifications:
-      - name: "slack"
-        enabled: true
-        channel: "#detaskify-updates"
-      - name: "discord"
-        enabled: false
-        server_id: "123456789"
-    calendar_notification:
-      enabled: true
-      calendar_id: "user_calendar_id"
-      remind_before: 10  # minutes before event
-    general_reminder:
-      enabled: true
-      interval: 60  # in minutes
+      channel: "#detaskify-updates"
+    - name: "discord"
+      enabled: false
+      server_id: "123456789"
+  calendar_notification:
+    enabled: true
+    calendar_id: "user_calendar_id"
+    remind_before: 10  # minutes before event
+  general_reminder:
+    enabled: true
+    interval: 60  # in minutes
 
 auto_task_detection:
   enabled: true
