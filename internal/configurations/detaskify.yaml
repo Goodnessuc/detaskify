@@ -3,7 +3,6 @@ project_status:
   - "testing"
   - "documentation"
   - "research"
-
 project_tasks:
   title: "Setup Project Environment"
   description: "Install necessary dependencies and configure the development environment."
@@ -23,7 +22,6 @@ project_tasks:
       repeat:
         - "monday"
         - "thursday"
-
 reminders:
   desktop_notification:
     enabled: true
@@ -45,7 +43,6 @@ reminders:
   general_reminder:
     enabled: true
     interval: 60  # in minutes
-
 auto_task_detection:
   enabled: true
   analysis_interval: 24  # in hours
