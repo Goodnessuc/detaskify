@@ -1,78 +1,47 @@
 package configurations
 
-import "time"
-
 type Project struct {
-	ProjectStatus     string            `yaml:"project_status"`
-	ProjectTasks      Task              `yaml:"project_tasks"`
-	Reminders         Reminders         `yaml:"reminders"`
-	AutoTaskDetection AutoTaskDetection `yaml:"auto_task_detection"`
+	Name          string   `yaml:"name"`
+	Status        string   `yaml:"status"`
+	Collaborators []string `yaml:"collaborators"`
+	Notes         string   `yaml:"notes"`
+	URL           string   `yaml:"url"`
 }
 
 type Task struct {
-	Title       string         `yaml:"title"`
-	Description string         `yaml:"description"`
-	Priority    string         `yaml:"priority"`
-	Type        string         `yaml:"type"`
-	Deadline    time.Time      `yaml:"deadline"`
-	Status      string         `yaml:"status"`
-	Assignees   []string       `yaml:"assignees"`
-	Tags        []string       `yaml:"tags"`
-	Reminder    []TaskReminder `yaml:"reminder"`
+	Group       string     `yaml:"group"`
+	Title       string     `yaml:"title"`
+	Description string     `yaml:"description"`
+	Priority    string     `yaml:"priority"`
+	Type        string     `yaml:"type"`
+	Deadline    string     `yaml:"deadline"`
+	Status      string     `yaml:"status"`
+	Assignees   []string   `yaml:"assignees"`
+	Tags        []string   `yaml:"tags"`
+	Reminder    []Reminder `yaml:"reminder"`
+	Comment     string     `yaml:"comment"`
 }
 
-type TaskReminder struct {
+type Reminder struct {
 	Message string   `yaml:"message"`
 	Time    string   `yaml:"time"`
 	Repeat  []string `yaml:"repeat"`
 }
 
-type Reminders struct {
-	DesktopNotification       Notification               `yaml:"desktop_notification"`
-	EmailNotification         EmailNotification          `yaml:"email_notification"`
-	MessagingAppNotifications []MessagingAppNotification `yaml:"messaging_app_notifications"`
-	CalendarNotification      CalendarNotification       `yaml:"calendar_notification"`
-	GeneralReminder           GeneralReminder            `yaml:"general_reminder"`
+type Schedule struct {
+	Title       string     `yaml:"title"`
+	Description string     `yaml:"description"`
+	Priority    string     `yaml:"priority"`
+	Type        string     `yaml:"type"`
+	Deadline    string     `yaml:"deadline"`
+	Command     string     `yaml:"command"`
+	Status      string     `yaml:"status"`
+	Reminder    []Reminder `yaml:"reminder"`
+	Repeat      []string   `yaml:"repeat"`
 }
 
-type Notification struct {
-	Enabled     bool `yaml:"enabled"`
-	DisplayTime int  `yaml:"display_time"`
-}
-
-type EmailNotification struct {
-	Enabled      bool   `yaml:"enabled"`
-	EmailAddress string `yaml:"email_address"`
-}
-
-type MessagingAppNotification struct {
-	Name    string `yaml:"name"`
-	Enabled bool   `yaml:"enabled"`
-	// Add additional fields for Slack, Discord, etc.
-	Channel  string `yaml:"channel,omitempty"`
-	ServerID string `yaml:"server_id,omitempty"`
-}
-
-type CalendarNotification struct {
-	Enabled      bool   `yaml:"enabled"`
-	CalendarID   string `yaml:"calendar_id"`
-	RemindBefore int    `yaml:"remind_before"`
-}
-
-type GeneralReminder struct {
-	Enabled  bool `yaml:"enabled"`
-	Interval int  `yaml:"interval"`
-}
-
-type AutoTaskDetection struct {
-	Enabled                bool                    `yaml:"enabled"`
-	AnalysisInterval       int                     `yaml:"analysis_interval"`
-	ProjectManagementTools []ProjectManagementTool `yaml:"project_management_tools"`
-}
-
-type ProjectManagementTool struct {
-	Name         string `yaml:"name"`
-	Enabled      bool   `yaml:"enabled"`
-	SyncInterval int    `yaml:"sync_interval,omitempty"`
-	SyncComments bool   `yaml:"sync_comments,omitempty"`
+type Config struct {
+	Project  Project  `yaml:"project"`
+	Tasks    []Task   `yaml:"tasks"`
+	Schedule Schedule `yaml:"schedule"`
 }

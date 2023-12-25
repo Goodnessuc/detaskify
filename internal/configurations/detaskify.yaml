@@ -1,51 +1,41 @@
-project_status: "development"
-project_tasks:
-  title: "Setup Project Environment"
-  description: "Install necessary dependencies and configure the development environment."
-  priority: "high"
-  type: "todo"
-  deadline: "2023-01-10"
-  status: "pending"
+project:
+  name: ""
+  status: ""
+  url: ""
+  collaborators: [ "", "" ]
+  notes:
+tasks:
+  group: ""
+  title: ""
+  description: ""
+  priority: ""
+  type: ""
+  deadline: ""
+  status: ""
   assignees:
-    - "developera"
-    - "developerb"
+    - ""
+    - ""
   tags:
-    - "setup"
-    - "environment"
+    - ""
+    - ""
   reminder:
-    - message: "Check the code review comments"
-      time: "09:00"
+    - message: ""
+      time: ""
       repeat:
-        - "monday"
-        - "thursday"
-reminders:
-  desktop_notification:
-    enabled: true
-    display_time: 5  # in seconds
-  email_notification:
-    enabled: true
-    email_address: "user@example.com"
-  messaging_app_notifications:
-    - name: "slack"
-      enabled: true
-      channel: "#detaskify-updates"
-    - name: "discord"
-      enabled: false
-      server_id: "123456789"
-  calendar_notification:
-    enabled: true
-    calendar_id: "user_calendar_id"
-    remind_before: 10  # minutes before event
-  general_reminder:
-    enabled: true
-    interval: 60  # in minutes
-auto_task_detection:
-  enabled: true
-  analysis_interval: 24  # in hours
-  project_management_tools:
-    - name: "jira"
-      enabled: true
-      sync_interval: 15  # in minutes
-    - name: "trello"
-      enabled: false
-    - sync_comments: true
+        - ""
+        - ""
+  comment:
+schedule:
+  title: ""
+  description: ""
+  priority: ""
+  type: ""
+  deadline: ""
+  command: ""
+  status: ""
+  reminder:
+    - message: ""
+      time: ""
+  repeat:
+    - ""
+    - ""
