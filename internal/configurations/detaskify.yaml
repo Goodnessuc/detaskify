@@ -1,8 +1,4 @@
-project_status:
-  - "development"
-  - "testing"
-  - "documentation"
-  - "research"
+project_status: "development"
 project_tasks:
   title: "Setup Project Environment"
   description: "Install necessary dependencies and configure the development environment."
