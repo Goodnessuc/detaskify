@@ -3,39 +3,65 @@ project:
   status: ""
   url: ""
   collaborators: [ "", "" ]
-  notes:
+  description: ""
+
 tasks:
-  group: ""
-  title: ""
-  description: ""
-  priority: ""
-  type: ""
-  deadline: ""
-  status: ""
-  assignees:
-    - ""
-    - ""
-  tags:
-    - ""
-    - ""
-  reminder:
-    - message: ""
-      time: ""
-      repeat:
-        - ""
-        - ""
-  comment:
+  - id: ""
+    group: ""
+    title: ""
+    description: ""
+    priority: ""
+    type: ""
+    deadline: ""
+    status: ""
+    assignees: [ "", "" ]
+    tags: [ "", "" ]
+    reminders:
+      - message: ""
+        time: ""
+        repeat: [ "", "", "" ]
+    comments: [ "" ]
+
+  - id: "task2"
+    group: "Marketing"
+    title: "Social Media Campaign"
+    description: "Launch a new social media marketing campaign."
+    priority: "High"
+    type: "Marketing"
+    deadline: "2023-12-31"
+    status: "In Progress"
+    assignees: [ "John Doe", "Jane Smith" ]
+    tags: [ "marketing", "social media" ]
+    reminders:
+      - message: "Finalize campaign plan"
+        time: "2023-11-30 10:00"
+        repeat: [ "daily" ]
+    comments: [ "Need to finalize the target audience." ]
+
 schedule:
-  title: ""
-  description: ""
-  priority: ""
-  type: ""
-  deadline: ""
-  command: ""
-  status: ""
-  reminder:
-    - message: ""
-      time: ""
-  repeat:
-    - ""
-    - ""
+  - title: ""
+    description: ""
+    priority: ""
+    type: ""
+    deadline: ""
+    command: ""
+    status: ""
+    reminder:
+      - message: ""
+        time: ""
+    repeat:
+      - ""
+      - ""
+  - title: ""
+    description: ""
+    priority: ""
+    type: ""
+    deadline: ""
+    command: ""
+    status: ""
+    reminder:
+      - message: ""
+        time: ""
+    repeat:
+      - ""
+      - ""

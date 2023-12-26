@@ -3,12 +3,19 @@ package configurations
 type Project struct {
 	Name          string   `yaml:"name"`
 	Status        string   `yaml:"status"`
-	Collaborators []string `yaml:"collaborators"`
-	Notes         string   `yaml:"notes"`
 	URL           string   `yaml:"url"`
+	Collaborators []string `yaml:"collaborators"`
+	Description   string   `yaml:"description"`
+}
+
+type Reminder struct {
+	Message string   `yaml:"message"`
+	Time    string   `yaml:"time"`
+	Repeat  []string `yaml:"repeat"`
 }
 
 type Task struct {
+	ID          string     `yaml:"id"`
 	Group       string     `yaml:"group"`
 	Title       string     `yaml:"title"`
 	Description string     `yaml:"description"`
@@ -18,17 +25,11 @@ type Task struct {
 	Status      string     `yaml:"status"`
 	Assignees   []string   `yaml:"assignees"`
 	Tags        []string   `yaml:"tags"`
-	Reminder    []Reminder `yaml:"reminder"`
-	Comment     string     `yaml:"comment"`
+	Reminders   []Reminder `yaml:"reminders"`
+	Comments    []string   `yaml:"comments"`
 }
 
-type Reminder struct {
-	Message string   `yaml:"message"`
-	Time    string   `yaml:"time"`
-	Repeat  []string `yaml:"repeat"`
-}
-
-type Schedule struct {
+type ScheduleItem struct {
 	Title       string     `yaml:"title"`
 	Description string     `yaml:"description"`
 	Priority    string     `yaml:"priority"`
@@ -40,8 +41,8 @@ type Schedule struct {
 	Repeat      []string   `yaml:"repeat"`
 }
 
-type Config struct {
-	Project  Project  `yaml:"project"`
-	Tasks    []Task   `yaml:"tasks"`
-	Schedule Schedule `yaml:"schedule"`
+type Data struct {
+	Project  Project        `yaml:"project"`
+	Tasks    []Task         `yaml:"tasks"`
+	Schedule []ScheduleItem `yaml:"schedule"`
 }
