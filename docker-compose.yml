@@ -30,15 +30,6 @@ services:
       - db
     networks:
       - fullstack
-  redis:
-    image: redis:latest
-    container_name: "tiventer-redis"
-    ports:
-      - "6380:6380"
-    networks:
-      - fullstack
-
-
 volumes:
   database_postgres:
 

@@ -18,6 +18,3 @@ type Users struct {
 	// GitHub, Wakatime, GitLab, Linkedin
 	SocialLinks *datatypes.JSON `gorm:"type:json"`
 }
-
-
-func CreateUser
