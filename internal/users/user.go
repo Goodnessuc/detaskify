@@ -1,6 +1,8 @@
 package users
 
 import (
+	"context"
+	"detaskify/internal/utils"
 	"github.com/lib/pq"
 	"gorm.io/datatypes"
 	"gorm.io/gorm"
@@ -8,15 +10,85 @@ import (
 
 type Users struct {
 	gorm.Model
-	Username     string         `json:"username"`
-	ProfilePhoto string         `json:"profile_photo"`
-	Email        string         `json:"email"`
-	Integrations pq.StringArray `json:"integrations""`
-	Technologies pq.StringArray `json:"technologies"`
-	Availability bool           `json:"availability"`
+	Username     string          `json:"username"`
+	ProfilePhoto string          `json:"profile_photo"`
+	Email        string          `json:"email"`
+	Integrations pq.StringArray  `json:"integrations""`
+	Technologies pq.StringArray  `json:"technologies"`
+	Availability bool            `json:"availability"`
+	SocialLinks  *datatypes.JSON `json:"social_links"`
+	Password     string          `json:"password"`
+	IsVerified   string          `json:"is_verified"`
+	Company      string          `json:"company"`
+}
 
-	// GitHub, Wakatime, GitLab, Linkedin Website
-	SocialLinks *datatypes.JSON `json:"social_links"`
-	IsVerified  string          `json:"is_verified"`
-	Company     string          `json:"company"`
+const (
+	Wakatime = iota
+	GitHub
+	Website
+	Twitter
+	LinkedIn
+)
+
+const (
+	user = iota
+	organization
+)
+
+type socials struct {
+	Twitter  string `json:"twitter"`
+	LinkedIn string `json:"linkedin"`
+	GitHub   string `json:"github"`
+	Wakatime string `json:"wakatime"`
+	Website  string `json:"website" validate:"url"`
+}
+
+type UserService interface {
+	CreateUser(ctx context.Context, user *Users) error
+	GetUserByUsername(ctx context.Context, username string) (*Users, error)
+	GetUserByEmail(ctx context.Context, email string) (*Users, error)
+	UpdateUser(ctx context.Context, user *Users) error
+	DeleteUser(ctx context.Context, user *Users) error
+	ValidateSignIn(ctx context.Context, identifier, password string) (bool, error)
+}
+
+// UserRepository is the blueprint for user-related logic
+type UserRepository struct {
+	service UserService
+}
+
+// NewUserService creates a new user service
+func NewUserService(service UserService) UserRepository {
+	return UserRepository{
+		service: service,
+	}
+}
+
+func (u *UserRepository) CreateUser(ctx context.Context, user *Users) error {
+	hashedPassword, err := utils.HashPassword(user.Password)
+	if err != nil {
+		return err
+	}
+	user.Password = hashedPassword
+	return u.service.CreateUser(ctx, user)
+
+}
+
+func (u *UserRepository) GetUserByUsername(ctx context.Context, username string) (*Users, error) {
+	return u.service.GetUserByUsername(ctx, username)
+}
+
+func (u *UserRepository) GetUserByEmail(ctx context.Context, email string) (*Users, error) {
+	return u.service.GetUserByEmail(ctx, email)
+}
+func (u *UserRepository) UpdateUser(ctx context.Context, user *Users) error {
+	return u.service.UpdateUser(ctx, user)
+}
+func (u *UserRepository) DeleteUser(ctx context.Context, user *Users) error {
+	return u.service.DeleteUser(ctx, user)
+
+}
+func (u *UserRepository) ValidateSignIn(ctx context.Context, identifier, password string) (bool, error) {
+	return u.service.ValidateSignIn(ctx, identifier, password)
+
 }
