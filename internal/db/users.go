@@ -4,6 +4,7 @@ import (
 	"context"
 	"detaskify/internal/users"
 	"encoding/json"
+	"errors"
 	"github.com/lib/pq"
 	"gorm.io/datatypes"
 	"gorm.io/gorm"
@@ -15,6 +16,7 @@ type Users struct {
 	Username     string `gorm:"size:255;not null;unique"`
 	ProfilePhoto string
 	Email        string          `gorm:"size:255;not null;unique"`
+	Provider     string          `gorm:"default:TRADITIONAL"`
 	Integrations pq.StringArray  `gorm:"type:text[]"`
 	Technologies pq.StringArray  `gorm:"type:text[]"`
 	Availability bool            `gorm:"type:boolean"`
@@ -26,7 +28,7 @@ type Users struct {
 
 func (d *Database) CreateUser(ctx context.Context, user *users.Users) error {
 	var SocialLinks *datatypes.JSON
-	marshaled, _ := json.Marshal(user.SocialLink)
+	marshaled, _ := json.Marshal(user.SocialLinks)
 	SocialLinks = (*datatypes.JSON)(&marshaled)
 	newUser := &users.Users{
 		Username:     user.Username,
@@ -66,9 +68,11 @@ func (d *Database) GetUserByEmail(ctx context.Context, email string) (*users.Use
 	return &user, nil
 }
 
-// TODO: Seperate from password change functionality
-
 func (d *Database) UpdateUser(ctx context.Context, username string, updateData *users.Users) error {
+	// Remove the password field from updateData
+	updateData.Password = ""
+
+	// Proceed with the update
 	result := d.Client.WithContext(ctx).Model(&users.Users{}).Where("username = ?", username).Updates(updateData)
 	if result.Error != nil {
 		log.Printf("Error updating user: %s", result.Error.Error())
@@ -86,17 +90,31 @@ func (d *Database) DeleteUser(ctx context.Context, username string) error {
 	return nil
 }
 
-// TODO: Hash and Compare
-// ValidateSignInData allows a user to sign in using either a username or an email address if the password is correct
 func (d *Database) ValidateSignInData(ctx context.Context, identifier, password string) (bool, error) {
 	var user users.Users
-	err := d.Client.WithContext(ctx).Where("username = ? OR email = ? AND password = ?", identifier, identifier, password).First(&user).Error
+
+	err := d.Client.WithContext(ctx).Where("username = ? OR email = ?", identifier, identifier).First(&user).Error
 	if err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return false, nil
+		}
 		log.Printf("Error getting user: %s", err.Error())
 		return false, err
 	}
-	return true, nil
 
+	if user.Password != password {
+		return false, nil // Incorrect password
+	}
+
+	return true, nil // Successful sign-in
 }
 
-// TODO: implement ResetPassword and ForgotPassword  then update functions
+func (d *Database) UpdateUserPassword(ctx context.Context, username, newPassword string) error {
+	// Update only the password field
+	result := d.Client.WithContext(ctx).Model(&users.Users{}).Where("username = ?", username).Update("password", newPassword)
+	if result.Error != nil {
+		log.Printf("Error updating user password: %s", result.Error.Error())
+		return result.Error
+	}
+	return nil
+}
