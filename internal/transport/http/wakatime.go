@@ -3,24 +3,10 @@ package http
 import (
 	"encoding/json"
 	"fmt"
-	"golang.org/x/oauth2"
 	"net/http"
-	"os"
 )
 
-var (
-	WakaTimeOAuthConfig = &oauth2.Config{
-		RedirectURL:  "http://localhost:8080/auth/callback",
-		ClientID:     os.Getenv("WAKATIME_CLIENT_ID"),
-		ClientSecret: os.Getenv("WAKATIME_CLIENT_SECRET"),
-		Scopes:       []string{"email", "read_stats"}, // Define required scopes
-		Endpoint: oauth2.Endpoint{
-			AuthURL:  "https://wakatime.com/oauth/authorize",
-			TokenURL: "https://wakatime.com/oauth/token",
-		},
-	}
-	oauthStateString = os.Getenv("") // Replace with a random state string for production
-)
+// TODO: Add a function to get the user's WakaTime stats
 
 // HandleWakaTimeLogin redirects the user to the WakaTime login page
 func HandleWakaTimeLogin(w http.ResponseWriter, r *http.Request) {

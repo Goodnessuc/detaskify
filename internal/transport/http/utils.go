@@ -4,8 +4,11 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"golang.org/x/oauth2"
+	"golang.org/x/oauth2/github"
 	"io"
 	"net/http"
+	"os"
 )
 
 type ProviderUser struct {
@@ -15,6 +18,41 @@ type ProviderUser struct {
 	Name      string `json:"name"`
 	AvatarURL string `json:"avatar_url"`
 }
+
+// TODO: CHANGE callback from localhost
+
+var (
+	WakaTimeOAuthConfig = &oauth2.Config{
+		RedirectURL:  "http://localhost:8080/auth/callback",
+		ClientID:     os.Getenv("WAKATIME_CLIENT_ID"),
+		ClientSecret: os.Getenv("WAKATIME_CLIENT_SECRET"),
+		Scopes:       []string{"email", "read_stats"}, // Define required scopes
+		Endpoint: oauth2.Endpoint{
+			AuthURL:  "https://wakatime.com/oauth/authorize",
+			TokenURL: "https://wakatime.com/oauth/token",
+		},
+	}
+	GitHubOAuthConfig = &oauth2.Config{
+		RedirectURL:  "http://localhost:8080/auth/callback",
+		ClientID:     "",
+		ClientSecret: "",
+		Scopes:       []string{"user:email"},
+		Endpoint:     github.Endpoint,
+	}
+
+	GitLabOAuthConfig = &oauth2.Config{
+		RedirectURL:  "http://localhost:8080/auth/callback", // Update this URL as needed
+		ClientID:     "",                                    // Replace with your GitLab Client ID
+		ClientSecret: "",                                    // Replace with your GitLab Client Secret
+		Scopes:       []string{"read_user"},
+		Endpoint: oauth2.Endpoint{
+			AuthURL:  "https://gitlab.com/oauth/authorize",
+			TokenURL: "https://gitlab.com/oauth/token",
+		},
+	}
+
+	oauthStateString = os.Getenv("") // Replace with a random state string for production
+)
 
 func JSONContentTypeWrapper(handler http.HandlerFunc) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
