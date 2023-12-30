@@ -10,8 +10,9 @@ import (
 
 type Users struct {
 	gorm.Model
-	Username     string          `json:"username"`
-	ProfilePhoto string          `json:"profile_photo"`
+	Username     string `json:"username"`
+	ProfilePhoto string `json:"profile_photo"`
+
 	Email        string          `json:"email"`
 	Integrations pq.StringArray  `json:"integrations""`
 	Technologies pq.StringArray  `json:"technologies"`

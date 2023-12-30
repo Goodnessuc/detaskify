@@ -4,6 +4,7 @@ import (
 	"detaskify/internal/users"
 	"detaskify/internal/utils"
 	"encoding/json"
+	"errors"
 	"net/http"
 )
 
@@ -72,4 +73,35 @@ func (h *Handler) DeleteUser(w http.ResponseWriter, r *http.Request) {
 	}
 
 	utils.JSON(w, http.StatusOK, nil)
+}
+
+func (h *Handler) UpdateUserPassword(w http.ResponseWriter, r *http.Request) {
+	// Assuming the username and new password are sent in the request body
+	var payload struct {
+		Username    string `json:"username"`
+		NewPassword string `json:"newPassword"`
+	}
+
+	err := json.NewDecoder(r.Body).Decode(&payload)
+	if err != nil {
+		utils.ERROR(w, http.StatusBadRequest, err)
+		return
+	}
+
+	// Validate the input, ensure it's not empty
+	if payload.Username == "" || payload.NewPassword == "" {
+		utils.ERROR(w, http.StatusBadRequest, errors.New("username and new password are required"))
+		return
+	}
+
+	// Call the method to update the user's password
+	err = h.Users.UpdateUserPassword(r.Context(), payload.Username, payload.NewPassword)
+	if err != nil {
+		// Handle specific error types if needed
+		utils.ERROR(w, http.StatusInternalServerError, err)
+		return
+	}
+
+	// Password update was successful
+	utils.JSON(w, http.StatusOK, map[string]string{"message": "Password updated successfully"})
 }
