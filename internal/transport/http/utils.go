@@ -1,11 +1,20 @@
 package http
 
 import (
+	"context"
 	"encoding/json"
 	"fmt"
 	"io"
 	"net/http"
 )
+
+type ProviderUser struct {
+	ID        int    `json:"id"`
+	Login     string `json:"login"`
+	Email     string `json:"email"`
+	Name      string `json:"name"`
+	AvatarURL string `json:"avatar_url"`
+}
 
 func JSONContentTypeWrapper(handler http.HandlerFunc) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {

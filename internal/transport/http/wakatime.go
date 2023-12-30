@@ -11,8 +11,8 @@ import (
 var (
 	WakaTimeOAuthConfig = &oauth2.Config{
 		RedirectURL:  "http://localhost:8080/auth/callback",
-		ClientID:     "xSWXLNNeZdBRRjkeZBbMoPIS",
-		ClientSecret: "waka_sec_lId6UhJAUqb0mWL2g9BjHMLP3CQxvBHzixi8JY1GK642HY9Z8yJFMR4XqFtkTlFieIHspv8GbmqYcOzH",
+		ClientID:     os.Getenv("WAKATIME_CLIENT_ID"),
+		ClientSecret: os.Getenv("WAKATIME_CLIENT_SECRET"),
 		Scopes:       []string{"email", "read_stats"}, // Define required scopes
 		Endpoint: oauth2.Endpoint{
 			AuthURL:  "https://wakatime.com/oauth/authorize",
