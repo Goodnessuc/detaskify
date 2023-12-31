@@ -29,5 +29,4 @@ func (h *Handler) HandleGitLabCallback(w http.ResponseWriter, r *http.Request) {
 	}
 
 	err = h.Users.CreateUser(r.Context(), &detaskifyUser)
-
 }
