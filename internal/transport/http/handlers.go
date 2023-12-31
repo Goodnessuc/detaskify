@@ -15,18 +15,20 @@ import (
 )
 
 type Handler struct {
-	Router    *mux.Router
-	Server    *http.Server
-	Users     users.UserRepository
-	Validator *utils.Validator
+	Router       *mux.Router
+	Server       *http.Server
+	Users        users.UserRepository
+	Validator    *utils.Validator
+	OAuthService *OAuthService
 }
 
 // NewHandler - returns a pointer to a Handler
 func NewHandler(users users.UserRepository) *Handler {
 	log.Println("setting up our handler")
 	h := &Handler{
-		Users:     users,
-		Validator: utils.NewValidator(),
+		Users:        users,
+		Validator:    utils.NewValidator(),
+		OAuthService: NewOAuthService(),
 	}
 
 	h.Router = mux.NewRouter()

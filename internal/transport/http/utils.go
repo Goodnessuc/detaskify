@@ -19,70 +19,76 @@ type ProviderUser struct {
 	AvatarURL string `json:"avatar_url"`
 }
 
-// TODO: CHANGE callback from localhost
+type OAuthService struct {
+	configs map[string]*oauth2.Config
+	client  *http.Client
+	state   string
+}
 
-var (
-	WakaTimeOAuthConfig = &oauth2.Config{
-		RedirectURL:  "http://localhost:8080/auth/callback",
-		ClientID:     os.Getenv("WAKATIME_CLIENT_ID"),
-		ClientSecret: os.Getenv("WAKATIME_CLIENT_SECRET"),
-		Scopes:       []string{"email", "read_stats"}, // Define required scopes
-		Endpoint: oauth2.Endpoint{
-			AuthURL:  "https://wakatime.com/oauth/authorize",
-			TokenURL: "https://wakatime.com/oauth/token",
+func NewOAuthService() *OAuthService {
+	return &OAuthService{
+		configs: map[string]*oauth2.Config{
+			"wakatime": {
+				RedirectURL:  os.Getenv("OAUTH_CALLBACK_URL"),
+				ClientID:     os.Getenv("WAKATIME_CLIENT_ID"),
+				ClientSecret: os.Getenv("WAKATIME_CLIENT_SECRET"),
+				Scopes:       []string{"read_logged_time"},
+				Endpoint: oauth2.Endpoint{
+					AuthURL:  "https://wakatime.com/oauth/authorize",
+					TokenURL: "https://wakatime.com/oauth/token",
+				},
+			},
+			"github": {
+				RedirectURL:  os.Getenv("OAUTH_CALLBACK_URL"),
+				ClientID:     os.Getenv("GITHUB_CLIENT_ID"),
+				ClientSecret: os.Getenv("GITHUB_CLIENT_SECRET"),
+				Scopes:       []string{"user:email"},
+				Endpoint:     github.Endpoint,
+			},
+			"gitlab": {
+				RedirectURL:  os.Getenv("OAUTH_CALLBACK_URL"),
+				ClientID:     os.Getenv("GITLAB_CLIENT_ID"),
+				ClientSecret: os.Getenv("GITLAB_CLIENT_SECRET"),
+				Scopes:       []string{"read_user"},
+				Endpoint: oauth2.Endpoint{
+					AuthURL:  "https://gitlab.com/oauth/authorize",
+					TokenURL: "https://gitlab.com/oauth/token",
+				},
+			},
 		},
-	}
-	GitHubOAuthConfig = &oauth2.Config{
-		RedirectURL:  "http://localhost:8080/auth/callback",
-		ClientID:     "",
-		ClientSecret: "",
-		Scopes:       []string{"user:email"},
-		Endpoint:     github.Endpoint,
-	}
-
-	GitLabOAuthConfig = &oauth2.Config{
-		RedirectURL:  "http://localhost:8080/auth/callback", // Update this URL as needed
-		ClientID:     "",                                    // Replace with your GitLab Client ID
-		ClientSecret: "",                                    // Replace with your GitLab Client Secret
-		Scopes:       []string{"read_user"},
-		Endpoint: oauth2.Endpoint{
-			AuthURL:  "https://gitlab.com/oauth/authorize",
-			TokenURL: "https://gitlab.com/oauth/token",
-		},
-	}
-
-	oauthStateString = os.Getenv("") // Replace with a random state string for production
-)
-
-func JSONContentTypeWrapper(handler http.HandlerFunc) http.HandlerFunc {
-	return func(w http.ResponseWriter, r *http.Request) {
-		// Set the Content-Type header to JSON
-		w.Header().Set("Content-Type", "application/json")
-		handler(w, r)
+		client: &http.Client{},
+		state:  os.Getenv("OAUTH_STATE_STRING"),
 	}
 }
 
-// GetUserInfo retrieves the user information from WakaTime
-func GetUserInfo(state string, code, URL string) (ProviderUser, error) {
+func (s *OAuthService) GetToken(provider, state, code string) (*oauth2.Token, error) {
+	if state != s.state {
+		return nil, fmt.Errorf("invalid oauth state")
+	}
+
+	config, ok := s.configs[provider]
+	if !ok {
+		return nil, fmt.Errorf("unknown provider: %s", provider)
+	}
+
+	return config.Exchange(context.Background(), code)
+}
+
+func (s *OAuthService) GetUserInfo(provider, state, code, APIURL string) (ProviderUser, error) {
 	var user ProviderUser
 
-	if state != oauthStateString {
-		return user, fmt.Errorf("invalid oauth state")
-	}
-
-	token, err := WakaTimeOAuthConfig.Exchange(context.Background(), code)
+	token, err := s.GetToken(provider, state, code)
 	if err != nil {
-		return user, fmt.Errorf("code exchange failed: %s", err.Error())
+		return user, err
 	}
 
-	client := &http.Client{}
-	req, err := http.NewRequest("GET", URL, nil)
+	req, err := http.NewRequest("GET", APIURL, nil)
 	if err != nil {
 		return user, fmt.Errorf("failed creating request: %s", err.Error())
 	}
 	req.Header.Set("Authorization", "Bearer "+token.AccessToken)
 
-	resp, err := client.Do(req)
+	resp, err := s.client.Do(req)
 	if err != nil {
 		return user, fmt.Errorf("failed getting user info: %s", err.Error())
 	}
@@ -99,4 +105,11 @@ func GetUserInfo(state string, code, URL string) (ProviderUser, error) {
 	}
 
 	return user, nil
+}
+
+func JSONContentTypeWrapper(handler http.HandlerFunc) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Content-Type", "application/json")
+		handler(w, r)
+	}
 }

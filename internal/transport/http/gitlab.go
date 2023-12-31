@@ -6,20 +6,24 @@ import (
 	"net/http"
 )
 
-// HandleGitLabLogin redirects the user to the GitLab login page
 func (h *Handler) HandleGitLabLogin(w http.ResponseWriter, r *http.Request) {
-	url := GitLabOAuthConfig.AuthCodeURL(oauthStateString)
+	url := h.OAuthService.configs["gitlab"].AuthCodeURL(h.OAuthService.state)
 	http.Redirect(w, r, url, http.StatusTemporaryRedirect)
 }
 
 // HandleGitLabCallback processes the OAuth callback from GitLab
 func (h *Handler) HandleGitLabCallback(w http.ResponseWriter, r *http.Request) {
-	user, err := GetUserInfo(r.URL.Query().Get("state"), "https://gitlab.com/api/v4/user", r.URL.Query().Get("code"))
+	state := r.URL.Query().Get("state")
+	code := r.URL.Query().Get("code")
+	gitLabAPIURL := "https://gitlab.com/api/v4/user" // GitLab API URL for user info
+
+	user, err := h.OAuthService.GetUserInfo("gitlab", state, code, gitLabAPIURL)
 	if err != nil {
 		log.Println(err.Error())
 		http.Redirect(w, r, "/", http.StatusTemporaryRedirect)
 		return
 	}
+
 	detaskifyUser := users.Users{
 		Username:     user.Login,
 		ProfilePhoto: user.AvatarURL,
@@ -29,4 +33,9 @@ func (h *Handler) HandleGitLabCallback(w http.ResponseWriter, r *http.Request) {
 	}
 
 	err = h.Users.CreateUser(r.Context(), &detaskifyUser)
+	// Handle the error from CreateUser
+	if err != nil {
+		log.Println(err.Error())
+		// Redirect or handle the error appropriately
+	}
 }
