@@ -1,31 +1,33 @@
 package http
 
 import (
-	"encoding/json"
-	"fmt"
+	"detaskify/internal/users"
+	"log"
 	"net/http"
 )
 
-// HandleGitLabLogin redirects the user to the GitLab login page
-func HandleGitLabLogin(w http.ResponseWriter, r *http.Request) {
-	url := GitLabOAuthConfig.AuthCodeURL(oauthStateString)
+// HandleGitHubLogin redirects the user to the GitHub login page
+func (h *Handler) HandleGitHubLogin(w http.ResponseWriter, r *http.Request) {
+	url := GitHubOAuthConfig.AuthCodeURL(oauthStateString)
 	http.Redirect(w, r, url, http.StatusTemporaryRedirect)
 }
 
-// HandleGitLabCallback processes the OAuth callback from GitLab
-func HandleGitLabCallback(w http.ResponseWriter, r *http.Request) {
-	user, err := GetUserInfo(r.URL.Query().Get("state"), "https://gitlab.com/api/v4/user", r.URL.Query().Get("code"))
+// HandleGitHubCallback processes the OAuth callback from GitHub
+func (h *Handler) HandleGitHubCallback(w http.ResponseWriter, r *http.Request) {
+	user, err := GetUserInfo(r.URL.Query().Get("state"), r.URL.Query().Get("code"), "")
 	if err != nil {
-		fmt.Println(err.Error())
+		log.Println(err.Error())
 		http.Redirect(w, r, "/", http.StatusTemporaryRedirect)
 		return
 	}
 
-	jsonData, err := json.Marshal(user)
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
+	detaskifyUser := users.Users{
+		Username:     user.Login,
+		ProfilePhoto: user.AvatarURL,
+		Email:        user.Email,
+		Provider:     "GitHub",
+		IsVerified:   true,
 	}
 
-	w.Write(jsonData)
+	err = h.Users.CreateUser(r.Context(), &detaskifyUser)
 }
