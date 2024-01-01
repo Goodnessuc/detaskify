@@ -105,3 +105,37 @@ func (h *Handler) UpdateUserPassword(w http.ResponseWriter, r *http.Request) {
 	// Password update was successful
 	utils.JSON(w, http.StatusOK, map[string]string{"message": "Password updated successfully"})
 }
+
+func (h *Handler) ValidateSignInData(w http.ResponseWriter, r *http.Request) {
+	var credentials struct {
+		Identifier string `json:"identifier"` // Username or email
+		Password   string `json:"password"`
+	}
+
+	err := json.NewDecoder(r.Body).Decode(&credentials)
+	if err != nil {
+		utils.ERROR(w, http.StatusBadRequest, err)
+		return
+	}
+
+	// Validate the input, ensure it's not empty
+	if credentials.Identifier == "" || credentials.Password == "" {
+		utils.ERROR(w, http.StatusBadRequest, errors.New("identifier and password are required"))
+		return
+	}
+
+	// Call the method to validate the user's sign-in data
+	isValid, err := h.Users.ValidateSignIn(r.Context(), credentials.Identifier, credentials.Password)
+	if err != nil {
+		utils.ERROR(w, http.StatusInternalServerError, err)
+		return
+	}
+
+	if !isValid {
+		utils.ERROR(w, http.StatusUnauthorized, errors.New("invalid credentials"))
+		return
+	}
+
+	// Sign-in was successful
+	utils.JSON(w, http.StatusOK, map[string]string{"message": "Sign-in successful"})
+}

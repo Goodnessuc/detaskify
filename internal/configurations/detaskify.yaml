@@ -16,18 +16,19 @@ tasks:
     status: ""
     assignees: [ "", "" ]
     tags: [ "", "" ]
-    reminders:
+    reminder:
       - message: ""
         time: ""
-        repeat: [ "", "", "" ]
-    comments: [ "" ]
+        repeat: ["", "", ""]
+    comments:
+      "user1": "completed yet?"
+      "user2": "lmao"
 
-  - id: "task2"
+  - title: "Social Media Campaign"
     group: "Marketing"
-    title: "Social Media Campaign"
     description: "Launch a new social media marketing campaign."
-    priority: "High"
-    type: "Marketing"
+    priority: "high"
+    type: "todo"
     deadline: "2023-12-31"
     status: "In Progress"
     assignees: [ "John Doe", "Jane Smith" ]
@@ -36,7 +37,9 @@ tasks:
       - message: "Finalize campaign plan"
         time: "2023-11-30 10:00"
         repeat: [ "daily" ]
-    comments: [ "Need to finalize the target audience." ]
+    comments:
+      "user1": "completed yet?"
+      "user2": "lmao"
 
 schedule:
   - title: ""
