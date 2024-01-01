@@ -4,12 +4,14 @@ import (
 	"context"
 	"detaskify/internal/utils"
 	"github.com/lib/pq"
+	"github.com/oklog/ulid/v2"
 	"gorm.io/datatypes"
 	"gorm.io/gorm"
+	"time"
 )
 
 type Users struct {
-	gorm.Model
+	ID           ulid.ULID       `json:"id"`
 	Username     string          `json:"username"`
 	ProfilePhoto string          `json:"profile_photo"`
 	Email        string          `json:"email"`
@@ -20,7 +22,10 @@ type Users struct {
 	Provider     string          `json:"provider"`
 	Password     string          `json:"password"`
 	IsVerified   bool            `json:"is_verified"`
-	Company      string          `json:"company"`
+	Teams        []string        `json:"company"`
+	CreatedAt    time.Time       `json:"-"`
+	UpdatedAt    time.Time       `json:"-"`
+	DeletedAt    gorm.DeletedAt  `json:"-"`
 }
 
 const (

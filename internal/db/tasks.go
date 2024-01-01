@@ -2,6 +2,7 @@ package db
 
 import (
 	"context"
+	"github.com/oklog/ulid/v2"
 	"gorm.io/gorm"
 	"log"
 	"time"
@@ -9,13 +10,16 @@ import (
 
 // Task represents a task with various attributes
 type Task struct {
-	gorm.Model
-	Group           string `gorm:"size:255"`
-	CreatorUsername string `gorm:"size:255;not null"`
-	Title           string `gorm:"size:255;not null"`
-	Description     string `gorm:"size:1024"`
-	Priority        string `gorm:"size:50"`
-	Type            string `gorm:"size:50"`
+	ID              ulid.ULID `gorm:"primarykey"`
+	CreatedAt       time.Time
+	UpdatedAt       time.Time
+	DeletedAt       gorm.DeletedAt `gorm:"index"`
+	Group           string         `gorm:"size:255"`
+	CreatorUsername string         `gorm:"size:255;not null"`
+	Title           string         `gorm:"size:255;not null"`
+	Description     string         `gorm:"size:1024"`
+	Priority        string         `gorm:"size:50"`
+	Type            string         `gorm:"size:50"`
 	Deadline        time.Time
 	Status          string     `gorm:"size:50;not null"`
 	Assignees       []string   `gorm:"type:text[]"`

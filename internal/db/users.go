@@ -3,27 +3,33 @@ package db
 import (
 	"context"
 	"detaskify/internal/users"
+	"detaskify/internal/utils"
 	"encoding/json"
 	"errors"
 	"github.com/lib/pq"
+	"github.com/oklog/ulid/v2"
 	"gorm.io/datatypes"
 	"gorm.io/gorm"
 	"log"
+	"time"
 )
 
 type Users struct {
-	gorm.Model
-	Username     string `gorm:"size:255;not null;unique"`
+	ID           ulid.ULID `gorm:"primarykey"`
+	Username     string    `gorm:"size:255;not null;unique"`
 	ProfilePhoto string
 	Email        string          `gorm:"size:255;not null;unique"`
 	Provider     string          `gorm:"default:TRADITIONAL"`
 	Integrations pq.StringArray  `gorm:"type:text[]"`
 	Technologies pq.StringArray  `gorm:"type:text[]"`
 	Availability bool            `gorm:"type:boolean"`
-	Company      string          `gorm:"size:255"`
+	Team         string          `gorm:"size:255"`
 	Password     string          `gorm:"size:255"`
 	SocialLinks  *datatypes.JSON `gorm:"type:json"`
 	IsVerified   bool            `gorm:"type:boolean"`
+	CreatedAt    time.Time
+	UpdatedAt    time.Time
+	DeletedAt    gorm.DeletedAt `gorm:"index"`
 }
 
 func (d *Database) CreateUser(ctx context.Context, user *users.Users) error {
@@ -31,6 +37,9 @@ func (d *Database) CreateUser(ctx context.Context, user *users.Users) error {
 	marshaled, _ := json.Marshal(user.SocialLinks)
 	SocialLinks = (*datatypes.JSON)(&marshaled)
 	newUser := &users.Users{
+
+		ID: utils.GenerateULID(),
+
 		Username:     user.Username,
 		ProfilePhoto: user.ProfilePhoto,
 		Email:        user.Email,

@@ -2,6 +2,7 @@ package db
 
 import (
 	"context"
+	"github.com/oklog/ulid/v2"
 	"gorm.io/gorm"
 	"log"
 	"time"
@@ -9,12 +10,15 @@ import (
 
 // Reminder represents a reminder related to a task
 type Reminder struct {
-	gorm.Model
-	TaskID  uint      `gorm:"not null"`
-	Message string    `gorm:"size:255;not null"`
-	Time    time.Time `gorm:"not null"`
-	Repeat  []string  `gorm:"type:text[]"`
-	Status  string    `gorm:"size:50;not null"`
+	ID        ulid.ULID `gorm:"primarykey"`
+	CreatedAt time.Time
+	UpdatedAt time.Time
+	DeletedAt gorm.DeletedAt `gorm:"index"`
+	TaskID    uint           `gorm:"not null"`
+	Message   string         `gorm:"size:255;not null"`
+	Time      time.Time      `gorm:"not null"`
+	Repeat    []string       `gorm:"type:text[]"`
+	Status    string         `gorm:"size:50;not null"`
 }
 
 // CreateReminder creates a new reminder

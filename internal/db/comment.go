@@ -2,18 +2,23 @@ package db
 
 import (
 	"context"
+	"github.com/oklog/ulid/v2"
 	"gorm.io/gorm"
 	"log"
+	"time"
 )
 
 // Comment represents a comment made on a task
 type Comment struct {
-	gorm.Model
-	TaskID   uint   `gorm:"not null"`
-	UserID   string `gorm:"size:255;not null"`
-	Username string `gorm:"size:255;not null"`
-	Text     string `gorm:"size:1024;not null"`
-	Status   string `gorm:"size:50;not null"`
+	ID        ulid.ULID `gorm:"primarykey"`
+	CreatedAt time.Time
+	UpdatedAt time.Time
+	DeletedAt gorm.DeletedAt `gorm:"index"`
+	TaskID    uint           `gorm:"not null"`
+	UserID    string         `gorm:"size:255;not null"`
+	Username  string         `gorm:"size:255;not null"`
+	Text      string         `gorm:"size:1024;not null"`
+	Status    string         `gorm:"size:50;not null"`
 }
 
 // CreateComment creates a new comment
