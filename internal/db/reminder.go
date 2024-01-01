@@ -14,6 +14,7 @@ type Reminder struct {
 	Message string    `gorm:"size:255;not null"`
 	Time    time.Time `gorm:"not null"`
 	Repeat  []string  `gorm:"type:text[]"`
+	Status  string    `gorm:"size:50;not null"`
 }
 
 // CreateReminder creates a new reminder

@@ -64,3 +64,14 @@ func (d *Database) DeleteTask(ctx context.Context, id uint) error {
 	}
 	return nil
 }
+
+// GetUserTasks retrieves tasks created by a given user
+func (d *Database) GetUserTasks(ctx context.Context, username string) ([]Task, error) {
+	var tasks []Task
+	err := d.Client.WithContext(ctx).Where("creator_username = ?", username).Find(&tasks).Error
+	if err != nil {
+		log.Printf("Error getting tasks for user %s: %s", username, err.Error())
+		return nil, err
+	}
+	return tasks, nil
+}

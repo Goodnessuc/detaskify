@@ -13,6 +13,7 @@ type Comment struct {
 	UserID   string `gorm:"size:255;not null"`
 	Username string `gorm:"size:255;not null"`
 	Text     string `gorm:"size:1024;not null"`
+	Status   string `gorm:"size:50;not null"`
 }
 
 // CreateComment creates a new comment
