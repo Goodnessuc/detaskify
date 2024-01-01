@@ -3,43 +3,22 @@ package users
 import (
 	"context"
 	"detaskify/internal/utils"
-	"github.com/lib/pq"
-	"github.com/oklog/ulid/v2"
 	"gorm.io/datatypes"
-	"gorm.io/gorm"
-	"time"
 )
 
-type Users struct {
-	ID           ulid.ULID       `json:"id"`
-	Username     string          `json:"username"`
-	ProfilePhoto string          `json:"profile_photo"`
-	Email        string          `json:"email"`
-	Integrations pq.StringArray  `json:"integrations""`
-	Technologies pq.StringArray  `json:"technologies"`
-	Availability bool            `json:"availability"`
-	SocialLinks  *datatypes.JSON `json:"social_links"`
-	Provider     string          `json:"provider"`
-	Password     string          `json:"password"`
-	IsVerified   bool            `json:"is_verified"`
-	Teams        []string        `json:"company"`
-	CreatedAt    time.Time       `json:"-"`
-	UpdatedAt    time.Time       `json:"-"`
-	DeletedAt    gorm.DeletedAt  `json:"-"`
+type User struct {
+	Username     string         `json:"username" validate:"required,max=255"`
+	ProfilePhoto string         `json:"profile_photo"`
+	Email        string         `json:"email" validate:"required,email"`
+	Provider     string         `json:"provider"`
+	Integrations datatypes.JSON `json:"integrations"`
+	Technologies datatypes.JSON `json:"technologies"`
+	Availability bool           `json:"availability"`
+	Teams        []*Team        `json:"-"`
+	Password     string         `json:"-"`
+	SocialLinks  datatypes.JSON `json:"social_links"`
+	IsVerified   bool           `json:"is_verified"`
 }
-
-const (
-	Wakatime = iota
-	GitHub
-	Website
-	Twitter
-	LinkedIn
-)
-
-const (
-	user = iota
-	organization
-)
 
 type socials struct {
 	Twitter  string `json:"twitter"`
@@ -50,10 +29,10 @@ type socials struct {
 }
 
 type UserService interface {
-	CreateUser(ctx context.Context, user *Users) error
-	GetUserByUsername(ctx context.Context, username string) (*Users, error)
-	GetUserByEmail(ctx context.Context, email string) (*Users, error)
-	UpdateUser(ctx context.Context, username string, user *Users) error
+	CreateUser(ctx context.Context, user *User) error
+	GetUserByUsername(ctx context.Context, username string) (*User, error)
+	GetUserByEmail(ctx context.Context, email string) (*User, error)
+	UpdateUser(ctx context.Context, username string, user *User) error
 	DeleteUser(ctx context.Context, username string) error
 	UpdateUserPassword(ctx context.Context, username, newPassword string) error
 	ValidateSignIn(ctx context.Context, identifier, password string) (bool, error)
@@ -71,7 +50,7 @@ func NewUserService(service UserService) UserRepository {
 	}
 }
 
-func (u *UserRepository) CreateUser(ctx context.Context, user *Users) error {
+func (u *UserRepository) CreateUser(ctx context.Context, user *User) error {
 	hashedPassword, err := utils.HashPassword(user.Password)
 	if err != nil {
 		return err
@@ -91,14 +70,14 @@ func (u *UserRepository) ValidateSignIn(ctx context.Context, identifier, passwor
 
 }
 
-func (u *UserRepository) GetUserByUsername(ctx context.Context, username string) (*Users, error) {
+func (u *UserRepository) GetUserByUsername(ctx context.Context, username string) (*User, error) {
 	return u.service.GetUserByUsername(ctx, username)
 }
 
-func (u *UserRepository) GetUserByEmail(ctx context.Context, email string) (*Users, error) {
+func (u *UserRepository) GetUserByEmail(ctx context.Context, email string) (*User, error) {
 	return u.service.GetUserByEmail(ctx, email)
 }
-func (u *UserRepository) UpdateUser(ctx context.Context, username string, user *Users) error {
+func (u *UserRepository) UpdateUser(ctx context.Context, username string, user *User) error {
 	return u.service.UpdateUser(ctx, username, user)
 }
 func (u *UserRepository) DeleteUser(ctx context.Context, user string) error {

@@ -9,7 +9,7 @@ import (
 )
 
 func (h *Handler) CreateUser(w http.ResponseWriter, r *http.Request) {
-	var newUser users.Users
+	var newUser users.User
 	err := json.NewDecoder(r.Body).Decode(&newUser)
 	if err != nil {
 		utils.ERROR(w, http.StatusBadRequest, err)
@@ -48,7 +48,7 @@ func (h *Handler) GetUserByEmail(w http.ResponseWriter, r *http.Request) {
 
 func (h *Handler) UpdateUser(w http.ResponseWriter, r *http.Request) {
 	username := r.URL.Query().Get("username")
-	var updateData users.Users
+	var updateData users.User
 	err := json.NewDecoder(r.Body).Decode(&updateData)
 	if err != nil {
 		utils.ERROR(w, http.StatusBadRequest, err)

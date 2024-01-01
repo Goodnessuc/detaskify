@@ -2,87 +2,76 @@ package db
 
 import (
 	"context"
-	"detaskify/internal/users"
-	"detaskify/internal/utils"
-	"encoding/json"
+	"detaskify/internal/users" // Adjust this import path to where your User struct is defined
 	"errors"
-	"github.com/lib/pq"
-	"github.com/oklog/ulid/v2"
 	"gorm.io/datatypes"
 	"gorm.io/gorm"
 	"log"
-	"time"
 )
 
-type Users struct {
-	ID           ulid.ULID `gorm:"primarykey"`
-	Username     string    `gorm:"size:255;not null;unique"`
+type User struct {
+	gorm.Model
+	Username     string `gorm:"size:255;not null;unique"`
 	ProfilePhoto string
-	Email        string          `gorm:"size:255;not null;unique"`
-	Provider     string          `gorm:"default:TRADITIONAL"`
-	Integrations pq.StringArray  `gorm:"type:text[]"`
-	Technologies pq.StringArray  `gorm:"type:text[]"`
-	Availability bool            `gorm:"type:boolean"`
-	Team         string          `gorm:"size:255"`
-	Password     string          `gorm:"size:255"`
-	SocialLinks  *datatypes.JSON `gorm:"type:json"`
-	IsVerified   bool            `gorm:"type:boolean"`
-	CreatedAt    time.Time
-	UpdatedAt    time.Time
-	DeletedAt    gorm.DeletedAt `gorm:"index"`
+	Email        string         `gorm:"size:255;not null;unique"`
+	Provider     string         `gorm:"default:traditional"`
+	Integrations datatypes.JSON `gorm:"type:json"`
+	Technologies datatypes.JSON `gorm:"type:json"`
+	Availability bool           `gorm:"type:boolean"`
+	Teams        []*Team        `gorm:"many2many:user_teams;"`
+	Password     string         `gorm:"size:255"`
+	SocialLinks  datatypes.JSON `gorm:"type:json"`
+	IsVerified   bool           `gorm:"type:boolean"`
 }
 
-func (d *Database) CreateUser(ctx context.Context, user *users.Users) error {
-	var SocialLinks *datatypes.JSON
-	marshaled, _ := json.Marshal(user.SocialLinks)
-	SocialLinks = (*datatypes.JSON)(&marshaled)
-	newUser := &users.Users{
-
-		ID: utils.GenerateULID(),
-
+func (d *Database) CreateUser(ctx context.Context, user *users.User) error {
+	newUser := &users.User{
 		Username:     user.Username,
 		ProfilePhoto: user.ProfilePhoto,
 		Email:        user.Email,
+		Provider:     user.Provider,
 		Integrations: user.Integrations,
 		Technologies: user.Technologies,
 		Availability: user.Availability,
-		SocialLinks:  SocialLinks,
+		Teams:        user.Teams,
+		Password:     user.Password, // Consider hashing the password before storing
+		SocialLinks:  user.SocialLinks,
 		IsVerified:   user.IsVerified,
-		Company:      user.Company,
-		Password:     user.Password,
 	}
 
-	err := d.Client.WithContext(ctx).Create(&newUser).Error
+	err := d.Client.WithContext(ctx).Create(newUser).Error
 	if err != nil {
 		log.Printf("Error creating user: %s", err.Error())
+		return err
 	}
+
 	return nil
 }
 
-func (d *Database) GetUserByUsername(ctx context.Context, username string) (*users.Users, error) {
-	var user users.Users
+func (d *Database) GetUserByUsername(ctx context.Context, username string) (*users.User, error) {
+	var user users.User
 	err := d.Client.WithContext(ctx).Where("username = ?", username).First(&user).Error
 	if err != nil {
 		log.Printf("Error getting user: %s", err.Error())
+		return nil, err
 	}
 	return &user, nil
 }
 
-func (d *Database) GetUserByEmail(ctx context.Context, email string) (*users.Users, error) {
-	var user users.Users
+func (d *Database) GetUserByEmail(ctx context.Context, email string) (*users.User, error) {
+	var user users.User
 	err := d.Client.WithContext(ctx).Where("email = ?", email).First(&user).Error
 	if err != nil {
 		log.Printf("Error getting user: %s", err.Error())
+		return nil, err
 	}
 	return &user, nil
 }
 
-func (d *Database) UpdateUser(ctx context.Context, username string, updateData *users.Users) error {
-	// Remove the password field from updateData
+func (d *Database) UpdateUser(ctx context.Context, username string, updateData *users.User) error {
 	updateData.Password = ""
 
-	// Proceed with the update
-	result := d.Client.WithContext(ctx).Model(&users.Users{}).Where("username = ?", username).Updates(updateData)
+	result := d.Client.WithContext(ctx).Model(&users.User{}).Where("username = ?", username).Updates(updateData)
 	if result.Error != nil {
 		log.Printf("Error updating user: %s", result.Error.Error())
 		return result.Error
@@ -91,7 +80,7 @@ func (d *Database) UpdateUser(ctx context.Context, username string, updateData *
 }
 
 func (d *Database) DeleteUser(ctx context.Context, username string) error {
-	result := d.Client.WithContext(ctx).Where("username = ?", username).Delete(&users.Users{})
+	result := d.Client.WithContext(ctx).Where("username = ?", username).Delete(&users.User{})
 	if result.Error != nil {
 		log.Printf("Error deleting user: %s", result.Error.Error())
 		return result.Error
@@ -100,7 +89,7 @@ func (d *Database) DeleteUser(ctx context.Context, username string) error {
 }
 
 func (d *Database) ValidateSignInData(ctx context.Context, identifier, password string) (bool, error) {
-	var user users.Users
+	var user users.User
 
 	err := d.Client.WithContext(ctx).Where("username = ? OR email = ?", identifier, identifier).First(&user).Error
 	if err != nil {
@@ -111,16 +100,15 @@ func (d *Database) ValidateSignInData(ctx context.Context, identifier, password 
 		return false, err
 	}
 
-	if user.Password != password {
-		return false, nil // Incorrect password
+	if user.Password != password { // Consider using a password comparison function for hashed passwords
+		return false, nil
 	}
 
-	return true, nil // Successful sign-in
+	return true, nil
 }
 
 func (d *Database) UpdateUserPassword(ctx context.Context, username, newPassword string) error {
-	// Update only the password field
-	result := d.Client.WithContext(ctx).Model(&users.Users{}).Where("username = ?", username).Update("password", newPassword)
+	result := d.Client.WithContext(ctx).Model(&users.User{}).Where("username = ?", username).Update("password", newPassword) // Consider hashing the new password
 	if result.Error != nil {
 		log.Printf("Error updating user password: %s", result.Error.Error())
 		return result.Error

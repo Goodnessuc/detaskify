@@ -24,7 +24,7 @@ func (h *Handler) HandleGitLabCallback(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	detaskifyUser := users.Users{
+	detaskifyUser := users.User{
 		Username:     user.Login,
 		ProfilePhoto: user.AvatarURL,
 		Email:        user.Email,
