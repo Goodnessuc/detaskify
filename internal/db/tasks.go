@@ -2,7 +2,7 @@ package db
 
 import (
 	"context"
-	"github.com/oklog/ulid/v2"
+	"github.com/google/uuid"
 	"gorm.io/gorm"
 	"log"
 	"time"
@@ -10,7 +10,7 @@ import (
 
 // Task represents a task with various attributes
 type Task struct {
-	ID              ulid.ULID `gorm:"primarykey"`
+	ID              uuid.UUID `gorm:"type:uuid;primary_key;default:uuid_generate_v4()"`
 	CreatedAt       time.Time
 	UpdatedAt       time.Time
 	DeletedAt       gorm.DeletedAt `gorm:"index"`
@@ -21,11 +21,9 @@ type Task struct {
 	Priority        string         `gorm:"size:50"`
 	Type            string         `gorm:"size:50"`
 	Deadline        time.Time
-	Status          string     `gorm:"size:50;not null"`
-	Assignees       []string   `gorm:"type:text[]"`
-	Tags            []string   `gorm:"type:text[]"`
-	Reminder        []Reminder `gorm:"foreignKey:TaskID"`
-	Comments        []Comment  `gorm:"foreignKey:TaskID"`
+	Status          string   `gorm:"size:50;not null"`
+	Assignees       []string `gorm:"type:text[]"`
+	Tags            []string `gorm:"type:text[]"`
 }
 
 // CreateTask creates a new task in the database
