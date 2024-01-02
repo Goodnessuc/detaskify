@@ -18,15 +18,17 @@ type Handler struct {
 	Router       *mux.Router
 	Server       *http.Server
 	Users        users.UserRepository
+	Teams        users.TeamRepository
 	Validator    *utils.Validator
 	OAuthService *OAuthService
 }
 
 // NewHandler - returns a pointer to a Handler
-func NewHandler(users users.UserRepository) *Handler {
+func NewHandler(users users.UserRepository, teams users.TeamRepository) *Handler {
 	log.Println("setting up our handler")
 	h := &Handler{
 		Users:        users,
+		Teams:        teams,
 		Validator:    utils.NewValidator(),
 		OAuthService: NewOAuthService(),
 	}

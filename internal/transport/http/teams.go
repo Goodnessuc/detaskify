@@ -1,7 +1,7 @@
 package http
 
 import (
-	"detaskify/internal/teams"
+	"detaskify/internal/users"
 	"detaskify/internal/utils"
 	"encoding/json"
 	"net/http"
@@ -9,7 +9,7 @@ import (
 
 // CreateTeam - Handler for creating a new team
 func (h *Handler) CreateTeam(w http.ResponseWriter, r *http.Request) {
-	var newTeam teams.Team
+	var newTeam users.Team
 	err := json.NewDecoder(r.Body).Decode(&newTeam)
 	if err != nil {
 		utils.ERROR(w, http.StatusBadRequest, err)
@@ -40,7 +40,7 @@ func (h *Handler) GetTeamByID(w http.ResponseWriter, r *http.Request) {
 // UpdateTeam - Handler for updating a team's details
 func (h *Handler) UpdateTeam(w http.ResponseWriter, r *http.Request) {
 	id := r.URL.Query().Get("id")
-	var updateData teams.Team
+	var updateData users.Team
 	err := json.NewDecoder(r.Body).Decode(&updateData)
 	if err != nil {
 		utils.ERROR(w, http.StatusBadRequest, err)
