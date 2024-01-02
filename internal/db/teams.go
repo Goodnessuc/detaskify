@@ -18,16 +18,16 @@ type Team struct {
 	Description  string         `gorm:"size:255"`
 	ProfilePhoto string
 	Banner       string
-	IsVerified   bool `gorm:"type:boolean"`type UserTeam struct {
+	IsVerified   bool `gorm:"type:boolean"`
+}
+
+type UserTeam struct {
 	UserID    uint `gorm:"primaryKey"`
 	TeamID    uint `gorm:"primaryKey"`
 	CreatedAt time.Time
 	UpdatedAt time.Time
 	DeletedAt gorm.DeletedAt `gorm:"index"`
 }
-
-}
-
 
 // CreateTeam creates a new team in the database.
 func (d *Database) CreateTeam(ctx context.Context, newTeam *users.Team) error {

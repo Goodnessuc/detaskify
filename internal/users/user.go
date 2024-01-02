@@ -9,6 +9,7 @@ import (
 type User struct {
 	Username     string         `json:"username" validate:"required,max=255"`
 	ProfilePhoto string         `json:"profile_photo"`
+	Banner       string         `json:"banner"`
 	Email        string         `json:"email" validate:"required,email"`
 	Provider     string         `json:"provider"`
 	Integrations datatypes.JSON `json:"integrations"`
