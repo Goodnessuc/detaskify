@@ -49,4 +49,4 @@ For any queries, please reach out to us at [contact@example.com](mailto:ukejegoo
 - Thanks to all the contributors who have invested their time and effort.
 - Special mention to the community for their continuous feedback and support.
 
-**Note:** This README is a work in progress and will be updated regularly to reflect the latest state of the project. Keep an eye on this space for more updates!
+**Note:** This README is a work in progress and will be updated regularly to reflect the latest state of the project. Keep an eye on this space for more updates!# detaskify-cli
