@@ -1,6 +1,8 @@
 package main
 
-import "detaskify/cmd"
+import (
+	"detaskify-cli/cmd/cmd"
+)
 
 func main() {
 	cmd.Execute()
