@@ -58,3 +58,14 @@ func (d *Database) DeleteReminder(ctx context.Context, id uint) error {
 	}
 	return nil
 }
+
+// ListRemindersByTaskID retrieves all reminders for a specific task.
+func (d *Database) ListRemindersByTaskID(ctx context.Context, taskID uint) ([]Reminder, error) {
+	var reminders []Reminder
+	err := d.Client.WithContext(ctx).Where("task_id = ?", taskID).Find(&reminders).Error
+	if err != nil {
+		log.Printf("Error retrieving reminders for task %d: %s", taskID, err.Error())
+		return nil, err
+	}
+	return reminders, nil
+}

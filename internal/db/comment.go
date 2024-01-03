@@ -56,3 +56,14 @@ func (d *Database) DeleteComment(ctx context.Context, id uint) error {
 	}
 	return nil
 }
+
+// ListCommentsByTaskID retrieves all comments for a specific task.
+func (d *Database) ListCommentsByTaskID(ctx context.Context, taskID uint) ([]TaskComment, error) {
+	var comments []TaskComment
+	err := d.Client.WithContext(ctx).Where("task_id = ?", taskID).Find(&comments).Error
+	if err != nil {
+		log.Printf("Error retrieving comments for task %d: %s", taskID, err.Error())
+		return nil, err
+	}
+	return comments, nil
+}
