@@ -24,6 +24,8 @@ type Task struct {
 	Status          string   `gorm:"size:50;not null"`
 	Assignees       []string `gorm:"type:text[]"`
 	Tags            []string `gorm:"type:text[]"`
+	Comments        []TaskComment
+	Reminders       []Reminder
 }
 
 // CreateTask creates a new task in the database
