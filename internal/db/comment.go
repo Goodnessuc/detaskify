@@ -9,7 +9,8 @@ import (
 // TaskComment represents a comment made on a task
 type TaskComment struct {
 	gorm.Model
-	Task     Task   `gorm:"foreignKey:ID"`
+	TaskID   uint   `gorm:"not null"`
+	Task     Task   `gorm:"foreignKey:TaskID"`
 	Username string `gorm:"size:255;not null"`
 	Text     string `gorm:"size:1024;not null"`
 	Status   string `gorm:"size:50;not null"`

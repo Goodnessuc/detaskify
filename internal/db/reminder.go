@@ -10,7 +10,8 @@ import (
 // Reminder represents a reminder related to a task
 type Reminder struct {
 	gorm.Model
-	Task    Task      `gorm:"foreignKey:ID"`
+	TaskID  uint      `gorm:"not null"`
+	Task    Task      `gorm:"foreignKey:TaskID"`
 	Creator string    `gorm:"not null"`
 	Message string    `gorm:"size:255;not null"`
 	Time    time.Time `gorm:"not null"`
