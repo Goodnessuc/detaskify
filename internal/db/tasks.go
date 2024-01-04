@@ -186,7 +186,6 @@ func (d *Database) RemoveTagFromTask(ctx context.Context, taskID uint, tag strin
 		return err
 	}
 
-	// Filter out the tag
 	var updatedTags []string
 	for _, t := range task.Tags {
 		if t != tag {
