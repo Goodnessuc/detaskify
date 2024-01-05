@@ -25,7 +25,7 @@ type Task struct {
 	Assignees       []string `gorm:"type:text[]"`
 	Tags            []string `gorm:"type:text[]"`
 	Comments        []TaskComment
-	Reminders       []Reminder
+	Reminders       []TaskReminders
 }
 
 // CreateTask creates a new task in the database
@@ -41,7 +41,7 @@ func (d *Database) CreateTask(ctx context.Context, task *Task) error {
 // GetTask retrieves a task by its ID
 func (d *Database) GetTask(ctx context.Context, id uint) (*Task, error) {
 	var task Task
-	err := d.Client.WithContext(ctx).Preload("Reminder").Preload("Comments").First(&task, id).Error
+	err := d.Client.WithContext(ctx).Preload("TaskReminders").Preload("Comments").First(&task, id).Error
 	if err != nil {
 		log.Printf("Error getting task: %s", err.Error())
 		return nil, err

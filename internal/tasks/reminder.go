@@ -5,8 +5,8 @@ import (
 	"time"
 )
 
-// Reminder represents a reminder related to a task
-type Reminder struct {
+// TaskReminders represents a reminder related to a task
+type TaskReminders struct {
 	ID      uint      `json:"id"`
 	TaskID  uint      `json:"task_id" validate:"required"`
 	Creator string    `json:"creator" validate:"required"`
@@ -17,11 +17,11 @@ type Reminder struct {
 }
 
 type ReminderService interface {
-	CreateReminder(ctx context.Context, reminder *Reminder) error
-	GetReminder(ctx context.Context, id uint) (*Reminder, error)
-	UpdateReminder(ctx context.Context, id uint, reminder *Reminder) error
+	CreateReminder(ctx context.Context, reminder *TaskReminders) error
+	GetReminder(ctx context.Context, id uint) (*TaskReminders, error)
+	UpdateReminder(ctx context.Context, id uint, reminder *TaskReminders) error
 	DeleteReminder(ctx context.Context, id uint) error
-	ListRemindersByTaskID(ctx context.Context, taskID uint) ([]Reminder, error)
+	ListRemindersByTaskID(ctx context.Context, taskID uint) ([]TaskReminders, error)
 }
 
 // ReminderRepository is the blueprint for reminder-related logic
@@ -36,15 +36,15 @@ func NewReminderService(service ReminderService) ReminderRepository {
 	}
 }
 
-func (r *ReminderRepository) CreateReminder(ctx context.Context, reminder *Reminder) error {
+func (r *ReminderRepository) CreateReminder(ctx context.Context, reminder *TaskReminders) error {
 	return r.service.CreateReminder(ctx, reminder)
 }
 
-func (r *ReminderRepository) GetReminder(ctx context.Context, id uint) (*Reminder, error) {
+func (r *ReminderRepository) GetReminder(ctx context.Context, id uint) (*TaskReminders, error) {
 	return r.service.GetReminder(ctx, id)
 }
 
-func (r *ReminderRepository) UpdateReminder(ctx context.Context, id uint, reminder *Reminder) error {
+func (r *ReminderRepository) UpdateReminder(ctx context.Context, id uint, reminder *TaskReminders) error {
 	return r.service.UpdateReminder(ctx, id, reminder)
 }
 
@@ -52,6 +52,6 @@ func (r *ReminderRepository) DeleteReminder(ctx context.Context, id uint) error 
 	return r.service.DeleteReminder(ctx, id)
 }
 
-func (r *ReminderRepository) ListRemindersByTaskID(ctx context.Context, taskID uint) ([]Reminder, error) {
+func (r *ReminderRepository) ListRemindersByTaskID(ctx context.Context, taskID uint) ([]TaskReminders, error) {
 	return r.service.ListRemindersByTaskID(ctx, taskID)
 }

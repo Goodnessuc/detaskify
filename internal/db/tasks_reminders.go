@@ -7,12 +7,11 @@ import (
 	"time"
 )
 
-// Reminder represents a reminder related to a task
-type Reminder struct {
+// TaskReminders represents a reminder related to a task
+type TaskReminders struct {
 	gorm.Model
 	TaskID  uint      `gorm:"not null"`
 	Task    Task      `gorm:"foreignKey:TaskID"`
-	Creator string    `gorm:"not null"`
 	Message string    `gorm:"size:255;not null"`
 	Time    time.Time `gorm:"not null"`
 	Repeat  []string  `gorm:"type:text[]"`
@@ -20,7 +19,7 @@ type Reminder struct {
 }
 
 // CreateReminder creates a new reminder
-func (d *Database) CreateReminder(ctx context.Context, reminder *Reminder) error {
+func (d *Database) CreateReminder(ctx context.Context, reminder *TaskReminders) error {
 	err := d.Client.WithContext(ctx).Create(reminder).Error
 	if err != nil {
 		log.Printf("Error creating reminder: %s", err.Error())
@@ -30,8 +29,8 @@ func (d *Database) CreateReminder(ctx context.Context, reminder *Reminder) error
 }
 
 // GetReminder retrieves a reminder by its ID
-func (d *Database) GetReminder(ctx context.Context, id uint) (*Reminder, error) {
-	var reminder Reminder
+func (d *Database) GetReminder(ctx context.Context, id uint) (*TaskReminders, error) {
+	var reminder TaskReminders
 	err := d.Client.WithContext(ctx).First(&reminder, id).Error
 	if err != nil {
 		log.Printf("Error getting reminder: %s", err.Error())
@@ -41,8 +40,8 @@ func (d *Database) GetReminder(ctx context.Context, id uint) (*Reminder, error) 
 }
 
 // UpdateReminder updates an existing reminder
-func (d *Database) UpdateReminder(ctx context.Context, id uint, updateData *Reminder) error {
-	result := d.Client.WithContext(ctx).Model(&Reminder{}).Where("id = ?", id).Updates(updateData)
+func (d *Database) UpdateReminder(ctx context.Context, id uint, updateData *TaskReminders) error {
+	result := d.Client.WithContext(ctx).Model(&TaskReminders{}).Where("id = ?", id).Updates(updateData)
 	if result.Error != nil {
 		log.Printf("Error updating reminder: %s", result.Error.Error())
 		return result.Error
@@ -52,7 +51,7 @@ func (d *Database) UpdateReminder(ctx context.Context, id uint, updateData *Remi
 
 // DeleteReminder deletes a reminder by its ID
 func (d *Database) DeleteReminder(ctx context.Context, id uint) error {
-	result := d.Client.WithContext(ctx).Where("id = ?", id).Delete(&Reminder{})
+	result := d.Client.WithContext(ctx).Where("id = ?", id).Delete(&TaskReminders{})
 	if result.Error != nil {
 		log.Printf("Error deleting reminder: %s", result.Error.Error())
 		return result.Error
@@ -61,8 +60,8 @@ func (d *Database) DeleteReminder(ctx context.Context, id uint) error {
 }
 
 // ListRemindersByTaskID retrieves all reminders for a specific task.
-func (d *Database) ListRemindersByTaskID(ctx context.Context, taskID uint) ([]Reminder, error) {
-	var reminders []Reminder
+func (d *Database) ListRemindersByTaskID(ctx context.Context, taskID uint) ([]TaskReminders, error) {
+	var reminders []TaskReminders
 	err := d.Client.WithContext(ctx).Where("task_id = ?", taskID).Find(&reminders).Error
 	if err != nil {
 		log.Printf("Error retrieving reminders for task %d: %s", taskID, err.Error())
