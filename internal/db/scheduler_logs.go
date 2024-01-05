@@ -44,15 +44,6 @@ func (d *Database) UpdateExecutionLog(ctx context.Context, logID uint, updatedLo
 	return nil
 }
 
-func (d *Database) DeleteExecutionLog(ctx context.Context, logID uint) error {
-	result := d.Client.WithContext(ctx).Where("id = ?", logID).Delete(&ScheduleExecutionLog{})
-	if result.Error != nil {
-		log.Printf("Error deleting execution log: %s", result.Error.Error())
-		return result.Error
-	}
-	return nil
-}
-
 func (d *Database) ListExecutionLogsByScheduleID(ctx context.Context, scheduleID uuid.UUID) ([]ScheduleExecutionLog, error) {
 	var logs []ScheduleExecutionLog
 	err := d.Client.WithContext(ctx).Where("schedule_id = ?", scheduleID).Find(&logs).Error

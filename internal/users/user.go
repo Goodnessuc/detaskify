@@ -21,14 +21,6 @@ type User struct {
 	IsVerified   bool           `json:"is_verified"`
 }
 
-type socials struct {
-	Twitter  string `json:"twitter"`
-	LinkedIn string `json:"linkedin"`
-	GitHub   string `json:"github"`
-	Wakatime string `json:"wakatime"`
-	Website  string `json:"website" validate:"url"`
-}
-
 type UserService interface {
 	CreateUser(ctx context.Context, user *User) error
 	GetUserByUsername(ctx context.Context, username string) (*User, error)
