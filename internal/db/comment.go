@@ -2,6 +2,7 @@ package db
 
 import (
 	"context"
+	"detaskify/internal/tasks"
 	"gorm.io/gorm"
 	"log"
 )
@@ -18,7 +19,7 @@ type TaskComment struct {
 }
 
 // CreateComment creates a new comment
-func (d *Database) CreateComment(ctx context.Context, comment *TaskComment) error {
+func (d *Database) CreateComment(ctx context.Context, comment *tasks.TaskComment) error {
 	err := d.Client.WithContext(ctx).Create(comment).Error
 	if err != nil {
 		log.Printf("Error creating comment: %s", err.Error())
