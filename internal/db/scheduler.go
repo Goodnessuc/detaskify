@@ -62,6 +62,16 @@ func (d *Database) DeleteSchedule(ctx context.Context, scheduleID uuid.UUID) err
 	return nil
 }
 
+func (d *Database) GetUserSchedules(ctx context.Context, userID uint) ([]Schedule, error) {
+	var schedules []Schedule
+	err := d.Client.WithContext(ctx).Where("user_id = ?", userID).Find(&schedules).Error
+	if err != nil {
+		log.Printf("Error getting user's schedules: %s", err.Error())
+		return nil, err
+	}
+	return schedules, nil
+}
+
 func (d *Database) ListSchedules(ctx context.Context) ([]Schedule, error) {
 	var schedules []Schedule
 	err := d.Client.WithContext(ctx).Find(&schedules).Error
