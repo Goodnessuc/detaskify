@@ -91,4 +91,73 @@ func (h *Handler) AliveCheck(writer http.ResponseWriter, request *http.Request) 
 func (h *Handler) mapRoutes() {
 	h.Router.HandleFunc("/alive", h.AliveCheck).Methods("GET")
 
+	// router declaration for version 1 of the API
+	apiV1Router := h.Router.PathPrefix("/api/v1").Subrouter()
+
+	// sub-routers of the V1 sub-router
+	authRouter := apiV1Router.PathPrefix("/auth").Subrouter()
+	commentRouter := apiV1Router.PathPrefix("/comments").Subrouter()
+	oauthRouter := authRouter.PathPrefix("/oauth").Subrouter()
+	githubRouter := oauthRouter.PathPrefix("/github").Subrouter()
+	gitlabRouter := oauthRouter.PathPrefix("/gitlab").Subrouter()
+	tasksRouter := apiV1Router.PathPrefix("/tasks").Subrouter()
+	remindersRouter := tasksRouter.PathPrefix("/reminders").Subrouter()
+	usersRouter := apiV1Router.PathPrefix("/users").Subrouter()
+	teamsRouter := apiV1Router.PathPrefix("/teams").Subrouter()
+
+	// task comments route declarations
+	commentRouter.HandleFunc("/create", h.CreateComment).Methods("POST")
+	commentRouter.HandleFunc("/", h.GetComment).Methods("GET")
+	commentRouter.HandleFunc("/update", h.UpdateComment).Methods("PATCH")
+	commentRouter.HandleFunc("/delete", h.DeleteComment).Methods("DELETE")
+	commentRouter.HandleFunc("/listByTask", h.ListCommentsByTaskID).Methods("GET")
+
+	// github oauth route declarations
+	githubRouter.HandleFunc("/login", h.HandleGitHubLogin).Methods("GET")
+	githubRouter.HandleFunc("/callback", h.HandleGitHubCallback).Methods("GET")
+
+	// gitlab router declarations
+	gitlabRouter.HandleFunc("/login", h.HandleGitLabLogin).Methods("GET")
+	gitlabRouter.HandleFunc("/callback", h.HandleGitLabCallback).Methods("GET")
+
+	// task router declarations
+	tasksRouter.HandleFunc("/create", h.CreateTask).Methods("POST")
+	tasksRouter.HandleFunc("/get", h.GetTask).Methods("GET")
+	tasksRouter.HandleFunc("/delete", h.DeleteTask).Methods("DELETE")
+	tasksRouter.HandleFunc("/getUserTasks", h.GetUserTasks).Methods("GET")
+	tasksRouter.HandleFunc("/listByStatus", h.ListTasksByStatus).Methods("GET")
+	tasksRouter.HandleFunc("/search", h.SearchTasks).Methods("GET")
+	tasksRouter.HandleFunc("/addAssignee", h.AddAssigneeToTask).Methods("POST")
+	tasksRouter.HandleFunc("/removeAssignee", h.RemoveAssigneeFromTask).Methods("DELETE")
+	tasksRouter.HandleFunc("/addTag", h.AddTagToTask).Methods("POST")
+	tasksRouter.HandleFunc("/removeTag", h.RemoveTagFromTask).Methods("DELETE")
+	tasksRouter.HandleFunc("/listByPriority", h.ListTasksByPriority).Methods("GET")
+	tasksRouter.HandleFunc("/listForReminder", h.ListTasksForReminder).Methods("GET")
+	tasksRouter.HandleFunc("/update", h.UpdateTask).Methods("PATCH")
+	tasksRouter.HandleFunc("/listOverdue", h.ListOverdueTasks).Methods("GET")
+	tasksRouter.HandleFunc("/listByDeadline", h.ListTasksByDeadline).Methods("GET")
+
+	// Routes for task reminders
+	remindersRouter.HandleFunc("/create", h.CreateReminder).Methods("POST")
+	remindersRouter.HandleFunc("/get", h.GetReminder).Methods("GET")
+	remindersRouter.HandleFunc("/update", h.UpdateReminder).Methods("PATCH")
+	remindersRouter.HandleFunc("/delete", h.DeleteReminder).Methods("DELETE")
+	remindersRouter.HandleFunc("/listByTaskID", h.ListRemindersByTaskID).Methods("GET")
+
+	// routes for user-specific functionality
+	usersRouter.HandleFunc("/create", h.CreateUser).Methods("POST")
+	usersRouter.HandleFunc("/getByUsername", h.getUserByUsername).Methods("GET")
+	usersRouter.HandleFunc("/getByEmail", h.GetUserByEmail).Methods("GET")
+	usersRouter.HandleFunc("/update", h.UpdateUser).Methods("PATCH")
+	usersRouter.HandleFunc("/delete", h.DeleteUser).Methods("DELETE")
+	usersRouter.HandleFunc("/updatePassword", h.UpdateUserPassword).Methods("PATCH")
+	usersRouter.HandleFunc("/validateSignIn", h.ValidateSignInData).Methods("POST")
+
+	// routes for team-specific functionality
+	teamsRouter.HandleFunc("/create", h.CreateTeam).Methods("POST")
+	teamsRouter.HandleFunc("/getByID", h.GetTeamByID).Methods("GET")
+	teamsRouter.HandleFunc("/update", h.UpdateTeam).Methods("PATCH")
+	teamsRouter.HandleFunc("/delete", h.DeleteTeam).Methods("DELETE")
+	teamsRouter.HandleFunc("/addUser", h.AddUserToTeam).Methods("POST")
+	teamsRouter.HandleFunc("/removeUser", h.RemoveUserFromTeam).Methods("DELETE")
 }
