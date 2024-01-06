@@ -23,17 +23,19 @@ type Handler struct {
 	Teams         users.TeamRepository
 	Task          tasks.TaskRepository
 	Validator     *utils.Validator
-	OAuthService  *OAuthService
+	OAuthService  *OAuthService ``
+	TaskComments  tasks.TaskCommentRepository
 }
 
 // NewHandler - returns a pointer to a Handler
-func NewHandler(users users.UserRepository, teams users.TeamRepository, task tasks.TaskRepository, taskReminder tasks.ReminderRepository) *Handler {
+func NewHandler(users users.UserRepository, teams users.TeamRepository, task tasks.TaskRepository, taskReminder tasks.ReminderRepository, taskComments tasks.TaskCommentRepository) *Handler {
 	log.Println("setting up our handler")
 	h := &Handler{
 		Users:         users,
 		Task:          task,
 		TaskReminders: taskReminder,
 		Teams:         teams,
+		TaskComments:  taskComments,
 		Validator:     utils.NewValidator(),
 		OAuthService:  NewOAuthService(),
 	}
@@ -66,7 +68,6 @@ func (h *Handler) Serve() error {
 	c := make(chan os.Signal, 1)
 	signal.Notify(c, syscall.SIGTERM)
 	<-c
-
 	// CreateAccount a deadline to wait for
 	ctx, cancel := context.WithTimeout(context.Background(), 15*time.Second)
 	defer cancel()
