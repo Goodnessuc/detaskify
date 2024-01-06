@@ -1,13 +1,31 @@
 package main
 
 import (
-	"errors"
+	"detaskify/internal/db"
+	"detaskify/internal/transport/http"
+	"detaskify/internal/users"
 	"fmt"
+	"log"
 )
 
 func Run() error {
 	fmt.Println("starting up the application...")
-	return errors.New("")
+	database, err := db.NewDatabase()
+	err = database.MigrateDatabase()
+	if err != nil {
+		log.Printf("Error Migrating to the database %v", err)
+		return err
+	}
+	userService := users.NewUserService(database)
+
+	followerService := users.NewFollowerService(database)
+	handler := http.NewHandler(userService, followerService, logger)
+	if err := handler.Serve(); err != nil {
+		log.Println("failed to gracefully serve our application")
+		return err
+	}
+
+	return nil
 
 }
 
