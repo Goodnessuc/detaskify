@@ -2,6 +2,7 @@ package http
 
 import (
 	"context"
+	"detaskify/internal/tasks"
 	"detaskify/internal/users"
 	"detaskify/internal/utils"
 	"encoding/json"
@@ -19,15 +20,17 @@ type Handler struct {
 	Server       *http.Server
 	Users        users.UserRepository
 	Teams        users.TeamRepository
+	Task         tasks.TaskRepository
 	Validator    *utils.Validator
 	OAuthService *OAuthService
 }
 
 // NewHandler - returns a pointer to a Handler
-func NewHandler(users users.UserRepository, teams users.TeamRepository) *Handler {
+func NewHandler(users users.UserRepository, teams users.TeamRepository, task tasks.TaskRepository) *Handler {
 	log.Println("setting up our handler")
 	h := &Handler{
 		Users:        users,
+		Task:         task,
 		Teams:        teams,
 		Validator:    utils.NewValidator(),
 		OAuthService: NewOAuthService(),
