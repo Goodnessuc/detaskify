@@ -110,7 +110,10 @@ func (h *Handler) mapRoutes() {
 	tasksRouter := apiV1Router.PathPrefix("/tasks").Subrouter()
 	remindersRouter := tasksRouter.PathPrefix("/reminders").Subrouter()
 	usersRouter := apiV1Router.PathPrefix("/users").Subrouter()
+	scheduleRouter := apiV1Router.PathPrefix("/schedules").Subrouter()
 	teamsRouter := apiV1Router.PathPrefix("/teams").Subrouter()
+	scheduleRemindersRouter := scheduleRouter.PathPrefix("/reminders").Subrouter()
+	scheduleLogsRouter := scheduleRouter.PathPrefix("/logs").Subrouter()
 
 	// task comments route declarations
 	commentRouter.HandleFunc("/create", h.CreateComment).Methods("POST")
@@ -167,4 +170,27 @@ func (h *Handler) mapRoutes() {
 	teamsRouter.HandleFunc("/delete", h.DeleteTeam).Methods("DELETE")
 	teamsRouter.HandleFunc("/addUser", h.AddUserToTeam).Methods("POST")
 	teamsRouter.HandleFunc("/removeUser", h.RemoveUserFromTeam).Methods("DELETE")
+
+	// Schedule-related route declarations
+	scheduleRouter.HandleFunc("/create", h.CreateSchedule).Methods("POST")
+	scheduleRouter.HandleFunc("/get", h.GetSchedule).Methods("GET")
+	scheduleRouter.HandleFunc("/update", h.UpdateSchedule).Methods("PATCH")
+	scheduleRouter.HandleFunc("/delete", h.DeleteSchedule).Methods("DELETE")
+	scheduleRouter.HandleFunc("/getUserSchedules", h.GetUserSchedules).Methods("GET")
+	scheduleRouter.HandleFunc("/list", h.ListSchedules).Methods("GET")
+
+	// Schedule logs route declarations
+	scheduleLogsRouter.HandleFunc("/create", h.LogExecution).Methods("POST")
+	scheduleLogsRouter.HandleFunc("/get", h.GetExecutionLog).Methods("GET")
+	scheduleLogsRouter.HandleFunc("/update", h.UpdateExecutionLog).Methods("PATCH")
+	scheduleLogsRouter.HandleFunc("/delete", h.DeleteExecutionLog).Methods("DELETE")
+	scheduleLogsRouter.HandleFunc("/listByScheduleID", h.ListExecutionLogsByScheduleID).Methods("GET")
+
+	// Schedule reminders route declarations
+	scheduleRemindersRouter.HandleFunc("/create", h.CreateScheduleReminder).Methods("POST")
+	scheduleRemindersRouter.HandleFunc("/get", h.GetScheduleReminder).Methods("GET")
+	scheduleRemindersRouter.HandleFunc("/update", h.UpdateScheduleReminder).Methods("PATCH")
+	scheduleRemindersRouter.HandleFunc("/delete", h.DeleteScheduleReminder).Methods("DELETE")
+	scheduleRemindersRouter.HandleFunc("/listAscendingOrder", h.ListRemindersInAscendingOrder).Methods("GET")
+
 }
