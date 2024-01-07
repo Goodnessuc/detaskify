@@ -24,9 +24,9 @@ type Handler struct {
 	Teams              users.TeamRepository
 	Task               tasks.TaskRepository
 	Validator          *utils.Validator
-	OAuthService       *OAuthService ``
+	OAuthService       *OAuthService
 	TaskComments       tasks.TaskCommentRepository
-	SchedulerLogs      scheduler.ExecutionLogRepository
+	Logs               scheduler.ExecutionLogRepository
 	SchedulerReminders scheduler.ReminderRepository
 	Scheduler          scheduler.ScheduleRepository
 }
@@ -40,7 +40,7 @@ func NewHandler(users users.UserRepository, teams users.TeamRepository, task tas
 		TaskReminders:      taskReminder,
 		Teams:              teams,
 		TaskComments:       taskComments,
-		SchedulerLogs:      logs,
+		Logs:               logs,
 		SchedulerReminders: scheduleReminders,
 		Scheduler:          scheduler,
 		Validator:          utils.NewValidator(),
