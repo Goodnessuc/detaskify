@@ -2,6 +2,7 @@ package http
 
 import (
 	"context"
+	"detaskify/internal/scheduler"
 	"detaskify/internal/tasks"
 	"detaskify/internal/users"
 	"detaskify/internal/utils"
@@ -16,28 +17,34 @@ import (
 )
 
 type Handler struct {
-	Router        *mux.Router
-	Server        *http.Server
-	Users         users.UserRepository
-	TaskReminders tasks.ReminderRepository
-	Teams         users.TeamRepository
-	Task          tasks.TaskRepository
-	Validator     *utils.Validator
-	OAuthService  *OAuthService ``
-	TaskComments  tasks.TaskCommentRepository
+	Router             *mux.Router
+	Server             *http.Server
+	Users              users.UserRepository
+	TaskReminders      tasks.ReminderRepository
+	Teams              users.TeamRepository
+	Task               tasks.TaskRepository
+	Validator          *utils.Validator
+	OAuthService       *OAuthService ``
+	TaskComments       tasks.TaskCommentRepository
+	SchedulerLogs      scheduler.ExecutionLogRepository
+	SchedulerReminders scheduler.ReminderRepository
+	Scheduler          scheduler.ScheduleRepository
 }
 
 // NewHandler - returns a pointer to a Handler
-func NewHandler(users users.UserRepository, teams users.TeamRepository, task tasks.TaskRepository, taskReminder tasks.ReminderRepository, taskComments tasks.TaskCommentRepository) *Handler {
+func NewHandler(users users.UserRepository, teams users.TeamRepository, task tasks.TaskRepository, taskReminder tasks.ReminderRepository, taskComments tasks.TaskCommentRepository, logs scheduler.ExecutionLogRepository, scheduleReminders scheduler.ReminderRepository, scheduler scheduler.ScheduleRepository) *Handler {
 	log.Println("setting up our handler")
 	h := &Handler{
-		Users:         users,
-		Task:          task,
-		TaskReminders: taskReminder,
-		Teams:         teams,
-		TaskComments:  taskComments,
-		Validator:     utils.NewValidator(),
-		OAuthService:  NewOAuthService(),
+		Users:              users,
+		Task:               task,
+		TaskReminders:      taskReminder,
+		Teams:              teams,
+		TaskComments:       taskComments,
+		SchedulerLogs:      logs,
+		SchedulerReminders: scheduleReminders,
+		Scheduler:          scheduler,
+		Validator:          utils.NewValidator(),
+		OAuthService:       NewOAuthService(),
 	}
 
 	h.Router = mux.NewRouter()
